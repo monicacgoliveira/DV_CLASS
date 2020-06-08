@@ -9,6 +9,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from plotly import tools
 import math
+import xlrd
 
 # https://htmlcheatsheet.com/css/
 
@@ -101,7 +102,7 @@ allyear_slider = dcc.RangeSlider(
 ######################################################App###############################################################
 
 app = dash.Dash(__name__, external_stylesheets='')
-
+server=app.server
 app.layout = html.Div([
 
     html.H1('SUSTAINABLE DEVELOPMENT GOALS'),
