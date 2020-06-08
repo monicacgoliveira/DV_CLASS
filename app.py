@@ -9,6 +9,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from plotly import tools
 import math
+import xlrd
 
 ######################################################Data##############################################################
 
