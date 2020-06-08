@@ -9,7 +9,8 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from plotly import tools
 import math
-import xlrd
+
+# https://htmlcheatsheet.com/css/
 
 ######################################################Data##############################################################
 
@@ -23,6 +24,9 @@ color_array = ["#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
 color_line = ['#2b8cbe', '#e34a33','#31a354','#756bb1','#636363','#93003a']
 
 color_bar = ['#a6bddb','#fdbb84','#a1d99b','#bcbddc','#bdbdbd',' #ff005e']
+
+color_accum = ['rgba(166,189,219,0.5)', 'rgba(253,187,132,0.5)', 'rgba(161,217,155,0.5)','rgba(188,189,220,0.5)',
+               'rgba(189,189,189,0.5)','rgba(255,0,94,0.5)']
 
 Europe = ['Albania','Austria','Armenia','Azerbaijan','Belarus','Belgium','Bosnia and Herzegovina','Bulgaria','Croatia',
           'Cyprus','Czechia','Denmark','Estonia','Finland','France','Georgia','Germany','Greece','Hungary','Iceland',
@@ -97,7 +101,7 @@ allyear_slider = dcc.RangeSlider(
 ######################################################App###############################################################
 
 app = dash.Dash(__name__, external_stylesheets='')
-server=app.server
+
 app.layout = html.Div([
 
     html.H1('SUSTAINABLE DEVELOPMENT GOALS'),
@@ -442,20 +446,23 @@ def update_graph(countries, year, allcountries, allyear, map):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     color_numb4=0
     color_numb5 = 0
+    fillmode='tonexty'
     for country in countries:
         fig.add_trace(
             go.Scatter(
                 x=filtered_by_year_and_country_df['TimePeriod'][(filtered_by_year_and_country_df['SeriesDescription'] == 'International financial flows to developing countries in support of clean energy research and development and renewable energy production, including in hybrid systems (millions of constant 2016 United States dollars)')],
                 y=filtered_by_year_and_country_df['Acc'][(filtered_by_year_and_country_df['SeriesDescription'] == 'International financial flows to developing countries in support of clean energy research and development and renewable energy production, including in hybrid systems (millions of constant 2016 United States dollars)') & (
                                         filtered_by_year_and_country_df['GeoAreaName'] == country)],
-                fill='tozeroy',
+                fill=fillmode,
                 name=country,
                 mode='lines',
-                fillcolor=color_bar[color_numb5],
+                fillcolor=color_accum[color_numb5],
                 line_color=color_bar[color_numb5]
+
 
             ), secondary_y=False)
         color_numb5 += 1
+        fillmode='tozeroy'
 
     for country in countries:
         fig.add_trace(
@@ -608,6 +615,7 @@ def update_graph(countries, year, allcountries, allyear, map):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
 
 
 
