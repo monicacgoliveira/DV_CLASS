@@ -97,7 +97,7 @@ allyear_slider = dcc.RangeSlider(
 ######################################################App###############################################################
 
 app = dash.Dash(__name__, external_stylesheets='')
-
+server=app.server
 app.layout = html.Div([
 
     html.H1('SUSTAINABLE DEVELOPMENT GOALS'),
