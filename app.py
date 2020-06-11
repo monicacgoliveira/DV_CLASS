@@ -624,7 +624,7 @@ def update_graph(countries, year, allcountries, allyear, map):
                      texttemplate='%{x:.2s}',textposition='outside'
                                ))
 
-    layout_avg = dict(title=dict(text='Average financial flows from 2013 to 2017', x=0.5),
+    layout_avg = dict(title=dict(text='Average financial flows by selected year', x=0.5),
                       template='none',
                       font=dict(size=12, color="#4d4d4d"),
                       yaxis=dict(tickmode='linear'),
@@ -634,27 +634,38 @@ def update_graph(countries, year, allcountries, allyear, map):
 
                       )
 
-    df.sort_values(by=['Acc'], inplace=True)
-    max = df[df['TimePeriod'] == 2017]
-    max2 = max.dropna(axis=0, subset=['Acc'])
-    max2.loc[df['Acc'] < 2500, 'GeoAreaName'] = 'Others'
-    max2 = max2.groupby('GeoAreaName')['Acc'].sum().reset_index()
+    filtered_by_year_df.sort_values(by=['GeoAreaName','TimePeriod'], inplace=True)
+    max = filtered_by_year_df.dropna(axis=0, subset=['Acc'])
+    max2 = max.groupby('GeoAreaName')['Acc'].sum().reset_index()
     max2['pct'] = max2['Acc']/max2['Acc'].sum()
-    data_max = ([go.Pie(
-        values=max2['pct']*100,
-        labels=max2['GeoAreaName'],
-        hovertemplate= "%{label}: <br> Percentage of total flows: %{percent}",
-        marker=dict(colors=color_array,line=dict(color='#000000', width=1)),
-        hole=.15,
-        title=dict(text='Distribution of financial flows')
+    max2.sort_values(by=['Acc'], inplace=True)
+    data_max = ([go.Scatter(
+        x=max2['pct']*100,
+        y=max2['GeoAreaName'],
+        hovertemplate= "%{y}: <br> Percentage of total flows: %{x:.2s}%",
+        mode='markers', marker=dict(line_width=1, symbol='circle', size=10)
     )])
 
-    layout_max = dict(title=dict(text='Distribution of financial flows from 2013 to 2017', x=0.5),
-                      paper_bgcolor='#f9f9f9',
+    layout_max = dict(paper_bgcolor='#f9f9f9',
                       plot_bgcolor='#f9f9f9',
-                       template='none',
-                       font=dict(size=12, color="#4d4d4d"),
-                       legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.5))
+                      template='none',
+                      font=dict(size=12, color="#4d4d4d"),
+                      title=dict(text='Distribution of financial flows by selected country year'),
+                      legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.1),
+                      yaxis=dict(tickmode='linear'),
+                      height=600,hovermode="closest",
+                      margin=dict(l=220, r=8, b=50, t=100),
+                     xaxis=dict(
+            showgrid=True,
+            showline=True,
+            linecolor='black',
+            tickfont_color='black',
+            showticklabels=True,
+            dtick=5,
+            ticks='outside',
+            tickcolor='black',
+            zeroline=True,
+            hoverformat='.0f'))
 
 
 
