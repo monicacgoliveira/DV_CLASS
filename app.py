@@ -461,7 +461,8 @@ def update_graph(countries, year, allcountries, allyear, map):
                 y=filtered_by_year_and_country_df['Acc'][(filtered_by_year_and_country_df['SeriesDescription'] == 'International financial flows to developing countries in support of clean energy research and development and renewable energy production, including in hybrid systems (millions of constant 2016 United States dollars)') & (
                                         filtered_by_year_and_country_df['GeoAreaName'] == country)],
                 fill=fillmode,
-                name=country,
+                legendgroup=country,
+                name=country + ' - Accumulative flow',
                 mode='lines',
                 fillcolor=color_accum[color_numb5],
                 line_color=color_bar[color_numb5]
@@ -479,7 +480,8 @@ def update_graph(countries, year, allcountries, allyear, map):
                     (filtered_by_year_and_country_df['SeriesDescription'] == 'Renewable energy share in the total final energy consumption (%)') & (
                                 filtered_by_year_and_country_df['GeoAreaName'] == country)],
                 # y=df['Value'][(df['SeriesDescription'] == 'Proportion of population with primary reliance on clean fuels and technology (%)') & (df['GeoAreaName']==country)]   ,
-                name=country,
+                legendgroup=country,
+                name=country + ' - Renewable energy share',
                 line_color=color_line[color_numb4]
 
             ), secondary_y=True)
