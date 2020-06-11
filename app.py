@@ -198,7 +198,7 @@ html.Div([
 
 html.Div([
     html.H3('International Cooperation to aid Developing Countries'),
-    html.H6('The visualization created aims to help to understand how the international financial aid influenced indicator 7.2.1 developed to measure Goal 7.'),
+    html.H6('The visualization created aims to help to understand how the international financial aid is distributed and influenced indicator 7.2.1 developed to measure Goal 7.'),
     ],className='pretty'),
 
 html.Div([
@@ -216,6 +216,8 @@ html.Div([
 
 html.Div([
 html.Div([
+           dcc.Graph(id='avg'),
+           dcc.Graph(id='max'),
            dcc.Graph(id='accum')
             ],style={'width': '80%'}),
 html.Div([
@@ -238,7 +240,9 @@ html.Div([
      Output("graph_line_bar", "figure"),
      Output("graph_bubble2", "figure"),
      Output('accum', 'figure'),
-     Output('dots', 'figure')],
+     Output('dots', 'figure'),
+     Output('avg', 'figure'),
+     Output('max', 'figure')],
     [Input('country_drop', 'value'),
      Input('year_slider', 'value'),
      Input('allcountry_drop', 'value'),
@@ -381,6 +385,7 @@ def update_graph(countries, year, allcountries, allyear, map):
     layout_line = dict(title=dict(text='Indicator 7.2.1', x=0.5),
                        yaxis=dict(title='Renewable energy share (%)',range=[0, 100]),
                        paper_bgcolor='#f9f9f9',
+                       plot_bgcolor='#f9f9f9',
                        template='none',
                        font=dict(size=12, color="#4d4d4d"),
                        legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.5))
@@ -413,7 +418,8 @@ def update_graph(countries, year, allcountries, allyear, map):
 
     layout_line_bar = dict(title=dict(text='Indicators 7.1.1 and 7.1.2', x=0.5),
                        yaxis=dict(title='Proportion of population (%)'),
-                       paper_bgcolor='#f9f9f9',
+                           paper_bgcolor='#f9f9f9',
+                           plot_bgcolor='#f9f9f9',
                        template='none',
                        font=dict(size=12, color="#4d4d4d"),
                        legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.5))
@@ -436,7 +442,8 @@ def update_graph(countries, year, allcountries, allyear, map):
                                               xaxis=dict(
                                                   title='Research and development expenditure as a proportion of GDP (%)',range=[0, 5]),
                                               yaxis=dict(title='Researchers (in full-time equivalent) <br> per million inhabitants',range=[14, 8400]),
-                                              paper_bgcolor='#f9f9f9',
+                                                paper_bgcolor='#f9f9f9',
+                                                plot_bgcolor='#f9f9f9',
                                               font=dict(size=12, color="#4d4d4d"),
                                               template='none'
                                               )
@@ -483,9 +490,10 @@ def update_graph(countries, year, allcountries, allyear, map):
         title=dict(text='Investiments accumulative and renewable energy share in final energy consumption',
                    x=0.5),
         yaxis=dict(title='Investiments accumulative <br> (millions of constant 2016 United States dollars)'),
-        yaxis2=dict(title='Renewable energy share (%)', range=[0, 100]),
+        yaxis2=dict(title='Renewable energy share (%)', range=[0, 100],showgrid=False),
         xaxis=dict(title='Year'),
         paper_bgcolor='#f9f9f9',
+        plot_bgcolor='#f9f9f9',
         template='none',
         font=dict(size=12, color="#4d4d4d"),
         legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.5))
@@ -599,11 +607,58 @@ def update_graph(countries, year, allcountries, allyear, map):
             xanchor='center',
 
         ),
-        width=800,
-        height=600,
-        paper_bgcolor='white',
-        plot_bgcolor='white'
+        paper_bgcolor='#f9f9f9',
+        plot_bgcolor='#f9f9f9'
     )
+
+####################################################avg############################################################
+    data_avg=[]
+    filtered_by_year_df.sort_values(by=['TimePeriod'], inplace=True)
+    international=filtered_by_year_df[filtered_by_year_df['SeriesDescription'] == 'International financial flows to developing countries in support of clean energy research and development and renewable energy production, including in hybrid systems (millions of constant 2016 United States dollars)']
+    bar=international.groupby('TimePeriod')['Value'].mean().reset_index()
+    data_avg = (dict(type='bar',
+                               x=bar['Value'],
+                               y=bar['TimePeriod'],
+                     marker=dict(color='rgb(158,202,225)',line=dict(color='rgba(8,48,107,0.5)',width=1.5)),
+                     hovertemplate="%{x} millions of constant 2016 United States dollars",
+                     orientation='h',
+                     texttemplate='%{x:.2s}',textposition='outside'
+                               ))
+
+    layout_avg = dict(title=dict(text='Average financial flows from 2013 to 2017', x=0.5),
+                      template='none',
+                      font=dict(size=12, color="#4d4d4d"),
+                      yaxis=dict(tickmode='linear'),
+                      xaxis=dict(showgrid=False),
+                      paper_bgcolor='#f9f9f9',
+                      plot_bgcolor='#f9f9f9'
+
+                      )
+
+    df.sort_values(by=['Acc'], inplace=True)
+    max = df[df['TimePeriod'] == 2017]
+    max2 = max.dropna(axis=0, subset=['Acc'])
+    max2.loc[df['Acc'] < 2500, 'GeoAreaName'] = 'Others'
+    max2 = max2.groupby('GeoAreaName')['Acc'].sum().reset_index()
+    max2['pct'] = max2['Acc']/max2['Acc'].sum()
+    data_max = ([go.Pie(
+        values=max2['pct']*100,
+        labels=max2['GeoAreaName'],
+        hovertemplate= "%{label}: <br> Percentage of total flows: %{percent}",
+        marker=dict(colors=color_array,line=dict(color='#000000', width=1)),
+        hole=.15,
+        title=dict(text='Distribution of financial flows')
+    )])
+
+    layout_max = dict(title=dict(text='Distribution of financial flows from 2013 to 2017', x=0.5),
+                      paper_bgcolor='#f9f9f9',
+                      plot_bgcolor='#f9f9f9',
+                       template='none',
+                       font=dict(size=12, color="#4d4d4d"),
+                       legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.5))
+
+
+
 ######################################################Return########################################################
 
     return go.Figure(data=data_choropleth, layout=layout_choropleth), \
@@ -612,12 +667,9 @@ def update_graph(countries, year, allcountries, allyear, map):
            go.Figure(data=data_line_bar, layout=layout_line_bar), \
            go.Figure(data=data_bubble2, layout=layout_bubble2), \
            go.Figure(data=fig),\
-           go.Figure(data=dots)
+           go.Figure(data=dots), \
+           go.Figure(data=data_avg, layout=layout_avg), \
+           go.Figure(data=data_max, layout=layout_max)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
-
-
-
-
