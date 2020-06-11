@@ -650,7 +650,7 @@ def update_graph(countries, year, allcountries, allyear, map):
                       plot_bgcolor='#f9f9f9',
                       template='none',
                       font=dict(size=12, color="#4d4d4d"),
-                      title=dict(text='Distribution of financial flows by selected country year'),
+                      title=dict(text='Distribution of financial flows by country and selected year'),
                       legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.1),
                       yaxis=dict(tickmode='linear'),
                       height=600,hovermode="closest",
