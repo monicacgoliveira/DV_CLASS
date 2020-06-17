@@ -630,7 +630,7 @@ def update_graph(countries, year, allcountries, allyear, map):
                       template='none',
                       font=dict(size=12, color="#4d4d4d"),
                       yaxis=dict(tickmode='linear'),
-                      xaxis=dict(showgrid=False),
+                      xaxis=dict(showgrid=False,title_text='millions of constant 2016 United States dollars'),
                       paper_bgcolor='#f9f9f9',
                       plot_bgcolor='#f9f9f9'
 
@@ -652,7 +652,7 @@ def update_graph(countries, year, allcountries, allyear, map):
                       plot_bgcolor='#f9f9f9',
                       template='none',
                       font=dict(size=12, color="#4d4d4d"),
-                      title=dict(text='Distribution of financial flows by country and selected year'),
+                      title=dict(text='Distribution of financial flows by country and selected years (%)'),
                       legend=dict(orientation='h', yanchor='top', xanchor='center', y=-0.3, x=0.1),
                       yaxis=dict(tickmode='linear'),
                       height=600,hovermode="closest",
